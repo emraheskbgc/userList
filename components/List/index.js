@@ -12,8 +12,8 @@ function List() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userData, setUserData] = useState([]);
  
-
   console.log(userData);
+  
   const handleFormSubmit = (data) => {
     // Form verilerini kullanıcı verileri olarak sakla
     setUserData([...userData, data]);
@@ -131,7 +131,7 @@ const handleDeleteUser = (id) => {
                 </div>
               </td>
               <td className="p-4 flex items-center whitespace-nowrap space-x-6 mr-12 lg:mr-0 " >
-                <img src="/resim.webp" alt=""  className="w-10 h-10 rounded-full"/>
+                <img src={user.image} alt={user.image}  className="w-10 h-10 rounded-full"/>
                 <div className="text-sm font-normal text-gray-500"> 
                     <div className="text-base font-semibold text-gray-900">
                       {user.name}

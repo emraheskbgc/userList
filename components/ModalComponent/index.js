@@ -3,17 +3,22 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import Select from "react-select";
-function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
-
+function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
   // app element belirtildi console hatası almamak için
   /* Bu konfigürasyonu yapmanızın temel amacı, ekran okuyucuların modal açıldığında ana içeriği görmemesini sağlamaktır. Bu, erişilebilirlik kurallarına uygun bir yaklaşımdır. */
   useEffect(() => {
     Modal.setAppElement("body");
-  },[])
+  }, []);
 
-
+  const[selectedFile, setSelectedFile] = useState(null)
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    formik.setFieldValue("image", file);
+  };
+ 
   const fields = [
     { name: "name", label: "Name" },
     { name: "email", label: "Email" },
@@ -33,7 +38,7 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
     email: Yup.string()
       .email("Geçersiz email adresi")
       .required("Email alanı zorunludur"),
-    image: Yup.string().required("Resim URL alanı zorunludur"),
+    image: Yup.mixed().required("Resim URL alanı zorunludur"),
     position: Yup.string().required("Pozisyon alanı zorunludur"),
     country: Yup.string().required("Ülke alanı zorunludur"),
     status: Yup.string().required("Durum alanı zorunludur"),
@@ -54,22 +59,29 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
     country: "",
     status: "",
   });
-  const formik = useFormik({
-    initialValues:formData,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      // Form submit işlemleri burada gerçekleştirilebilir
-      // form submit olduğunda her eklenen kullanıcıya uuid şeklinde bir id ataması yapılıyor
+  const handleFormSubmit = async (values) => {
+    try {
+      const imageUrl = selectedFile ? URL.createObjectURL(selectedFile) : "";
+
       const userWithUUID = {
         ...values,
         id: uuidv4(),
+        image: imageUrl,
       };
-      onSubmitForm(userWithUUID)
+
+      onSubmitForm(userWithUUID);
       onRequestClose();
-      formik.resetForm()
-     
-    },
+      formik.resetForm();
+    } catch (error) {
+      console.error("Dosya işlemleri hatası:", error);
+    }
+  };
+  const formik = useFormik({
+    initialValues: formData,
+    validationSchema: validationSchema,
+    onSubmit: handleFormSubmit,
   });
+
   useEffect(() => {
     // formik.values değiştiğinde formData'yı güncelle
     setFormData(formik.values);
@@ -88,18 +100,43 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
             >
               <label className="mb-1">{field.label}</label>
               {field.name === "status" ? (
-                <Select id={field.name} name={field.name} options={statusOptions} onChange={(selectedOption) => formik.setFieldValue(field.name, selectedOption.value)} onBlur={formik.handleBlur}
-                value={statusOptions.find((option) => option.value === formik.values[field.name])} className="w-[250px]" />
-              ):(<input
-                type="text"
-                id={field.name}
-                name={field.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values[field.name]}
-                className="bg-gray-100 px-3 text-gray-700 border w-[250px] rounded-md h-[40px]"
-              />)}
-              
+                <Select
+                  id={field.name}
+                  name={field.name}
+                  options={statusOptions}
+                  onChange={(selectedOption) =>
+                    formik.setFieldValue(field.name, selectedOption.value)
+                  }
+                  onBlur={formik.handleBlur}
+                  value={statusOptions.find(
+                    (option) => option.value === formik.values[field.name]
+                  )}
+                  className="w-[250px]"
+                />
+              ): field.name === "image" ? (
+                <div>
+                <label className="mb-1">{field.label}</label>
+                <input
+                    type="file"
+                    id={field.name}
+                    name={field.name}
+                    onChange={handleFileChange}
+                    onBlur={formik.handleBlur}
+                    className="border"
+                  />
+                </div>
+              ) : (
+                <input
+                  type="text"
+                  id={field.name}
+                  name={field.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values[field.name]}
+                  className="bg-gray-100 px-3 text-gray-700 border w-[250px] rounded-md h-[40px]"
+                />
+              )}
+
               {formik.touched[field.name] && formik.errors[field.name] ? (
                 <div className="text-red-500 mt-1">
                   {formik.errors[field.name]}
