@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useEffect} from "react";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import {useState} from "react";
@@ -7,16 +7,23 @@ import { FaPlus } from "react-icons/fa";
 import ModalComponent from "../ModalComponent";
 import { v4 as uuidv4 } from 'uuid';
 import Swal from "sweetalert2";
+import Search from "../Search";
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userData, setUserData] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([])
  
   console.log(userData);
   
+  useEffect(() => {
+   console.log(filteredUsers);
+  }, [filteredUsers]);
   const handleFormSubmit = (data) => {
     // Form verilerini kullanıcı verileri olarak sakla
     setUserData([...userData, data]);
+    const updatedFilteredUsers = [...filteredUsers, data];
+  setFilteredUsers(updatedFilteredUsers);
     // Modal'ı kapat
     closeModal();
   };
@@ -40,7 +47,7 @@ function List() {
 // Silme işleminde swalAlert kullanılmıştır
 const handleDeleteUser = (id) => {
   const userDeleteFind = userData.find((user) => user.id === id)
-  console.log(userDeleteFind.name);
+  
   Swal.fire({
     title: "Are you sure?",
     html: `You want the user named <strong style="color:red"> ${userDeleteFind.name}</strong> to be deleted? `,
@@ -58,6 +65,8 @@ const handleDeleteUser = (id) => {
       });
       const updateUserData = userData.filter((user) => user.id !== id)
   setUserData(updateUserData)
+  const updatedFilteredUsers = filteredUsers.filter((user) => user.id !== id);
+      setFilteredUsers(updatedFilteredUsers);
     }
   });
  
@@ -69,11 +78,7 @@ const handleDeleteUser = (id) => {
     <>
     <div className="flex flex-row  justify-between">
         <div>
-          <input
-            type="text"
-            className="bg-gray-100 border border-1 border-srcColor placeholder:text-srcPlace rounded-md px-2 py-1 w-[350px]"
-            placeholder="Search for users"
-          />
+        <Search userData={userData} setFilteredUsers={setFilteredUsers} />
         </div>
         <div className="mr-3">
           <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
@@ -115,8 +120,8 @@ const handleDeleteUser = (id) => {
           </thead>
           <tbody > 
                   {
-                    userData && userData.map((user,index) => (
-                      <tr key={index}>
+                    filteredUsers.map((user,index) => (
+                      <tr key={index} className="hover:bg-gray-100 cursor-pointer">
               <td
                 scope="col"
                 className="p-4  w-4"
