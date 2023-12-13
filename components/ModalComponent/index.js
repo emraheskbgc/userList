@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from 'uuid';
+import Select from "react-select";
 function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
 
   // app element belirtildi console hatası almamak için
@@ -20,6 +21,11 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
     { name: "position", label: "Position" },
     { name: "country", label: "Country" },
     { name: "status", label: "Status" },
+  ];
+  const statusOptions = [
+    { label: "Select", value: "" },
+    { label: "Active", value: "active" },
+    { label: "Offline", value: "offline" },
   ];
 
   const validationSchema = Yup.object({
@@ -81,7 +87,10 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
               className="flex flex-wrap flex-col mr-4 mb-4 mt-4"
             >
               <label className="mb-1">{field.label}</label>
-              <input
+              {field.name === "status" ? (
+                <Select id={field.name} name={field.name} options={statusOptions} onChange={(selectedOption) => formik.setFieldValue(field.name, selectedOption.value)} onBlur={formik.handleBlur}
+                value={statusOptions.find((option) => option.value === formik.values[field.name])} className="w-[250px]" />
+              ):(<input
                 type="text"
                 id={field.name}
                 name={field.name}
@@ -89,7 +98,8 @@ function ModalComponent({ isOpen, onRequestClose , onSubmitForm}) {
                 onBlur={formik.handleBlur}
                 value={formik.values[field.name]}
                 className="bg-gray-100 px-3 text-gray-700 border w-[250px] rounded-md h-[40px]"
-              />
+              />)}
+              
               {formik.touched[field.name] && formik.errors[field.name] ? (
                 <div className="text-red-500 mt-1">
                   {formik.errors[field.name]}

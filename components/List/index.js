@@ -5,6 +5,7 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import {useState} from "react";
 import { FaPlus } from "react-icons/fa";
 import ModalComponent from "../ModalComponent";
+import { v4 as uuidv4 } from 'uuid';
 import Swal from "sweetalert2";
 
 function List() {
@@ -92,7 +93,7 @@ const handleDeleteUser = (id) => {
                 <div className="flex items-center ">
                   <input
                     id="checkbox-all"
-                    aria-describedby="checkbox-1"
+                    aria-describedby="checkbox-all-description"
                     type="checkbox"
                     className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
                   />
@@ -122,14 +123,11 @@ const handleDeleteUser = (id) => {
               >
                 <div className="flex items-center ">
                   <input
-                    id="checkbox-17"
+                    id={`checkbox-${uuidv4()}`}
                     aria-describedby="checkbox-1"
                     type="checkbox"
                     className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
                   />
-                  <label htmlFor="checkbox-17" className="sr-only">
-                    checkbox
-                  </label>
                 </div>
               </td>
               <td className="p-4 flex items-center whitespace-nowrap space-x-6 mr-12 lg:mr-0 " >
