@@ -5,12 +5,13 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import {useState} from "react";
 import { FaPlus } from "react-icons/fa";
 import ModalComponent from "../ModalComponent";
-
+import Swal from "sweetalert2";
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userData, setUserData] = useState([]);
-  const [selectUserId, setSelectUserId] = useState(null)
+ 
+
   console.log(userData);
   const handleFormSubmit = (data) => {
     // Form verilerini kullanıcı verileri olarak sakla
@@ -18,6 +19,8 @@ function List() {
     // Modal'ı kapat
     closeModal();
   };
+ 
+
  
   const  openModal = () => {
     setIsModalOpen(true)
@@ -33,12 +36,31 @@ function List() {
  
 
 // Kullanıcı Silme Fonksiyonu
-
+// Silme işleminde swalAlert kullanılmıştır
 const handleDeleteUser = (id) => {
-  const updateUserData = userData.filter((user) => user.id !== id)
+  const userDeleteFind = userData.find((user) => user.id === id)
+  console.log(userDeleteFind.name);
+  Swal.fire({
+    title: "Are you sure?",
+    html: `You want the user named <strong style="color:red"> ${userDeleteFind.name}</strong> to be deleted? `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your file has been deleted.",
+        icon: "success" 
+      });
+      const updateUserData = userData.filter((user) => user.id !== id)
   setUserData(updateUserData)
+    }
+  });
+ 
 }
-
 // Kullanıcı Silme Fonksiyonu
 
 
@@ -55,7 +77,7 @@ const handleDeleteUser = (id) => {
         <div className="mr-3">
           <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
             <FaPlus /> <span onClick={openModal}> Add user</span>
-            <ModalComponent isOpen={isModalOpen} onRequestClose={closeModal}  onSubmitForm={handleFormSubmit}/>
+           
           </button>
         </div>
       </div>
@@ -132,7 +154,7 @@ const handleDeleteUser = (id) => {
                 </div>
               </td>
               <td className="p-4 whitespace-nowrap space-x-2">
-                <button className="text-white bg-btnEdit font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><FaEdit className="mr-2 h-5 w-5"/>Edit user</button>
+                <button  className="text-white bg-btnEdit font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><FaEdit className="mr-2 h-5 w-5"/>Edit user</button>
                 <button  onClick={() => handleDeleteUser(user.id)} className="text-white bg-btnDelete font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><RiDeleteBin6Fill className="mr-2 h-5 w-5"/>Delete user</button>
               </td>
              
@@ -146,7 +168,8 @@ const handleDeleteUser = (id) => {
       </div>
 
 
-
+      <ModalComponent isOpen={isModalOpen} onRequestClose={closeModal}  onSubmitForm={handleFormSubmit} 
+     />
 
     </>
   );
