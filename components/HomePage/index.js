@@ -1,7 +1,8 @@
 import { TiHome } from "react-icons/ti";
 import { FaAngleRight } from "react-icons/fa6";
 import React from "react";
-import Search from "../Search";
+
+import List from "../List";
 
 function HomePage() {
   return (
@@ -16,7 +17,7 @@ function HomePage() {
           <h2 className="text-xl font-semibold">All users</h2>
         </div>
         <div className="mt-3">
-          <Search />
+          <List />
         </div>
       </div>
     </>

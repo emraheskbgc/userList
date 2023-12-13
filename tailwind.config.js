@@ -16,6 +16,8 @@ module.exports = {
         btnBg: "#2596be",
         srcColor: "#8388a0",
         srcPlace: "#6b7890",
+        btnEdit:"#0c94b4",
+        btnDelete:"#e42526",
       },
     },
   },
