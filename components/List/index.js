@@ -8,12 +8,17 @@ import ModalComponent from "../ModalComponent";
 import { v4 as uuidv4 } from 'uuid';
 import Swal from "sweetalert2";
 import Search from "../Search";
+import DeleteBulk from "../DeleteBulk";
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userData, setUserData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([])
   const [editUserId, setEditUserId] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+ 
+
  
   
   useEffect(() => {
@@ -91,14 +96,57 @@ const handleDeleteUser = (id) => {
  
 }
 // Kullanıcı Silme Fonksiyonu
+const handleCheckboxChange = (userId) => {
+  if (selectedUsers.includes(userId)) {
+    // Kullanıcı zaten seçili ise kaldır
+    const updatedSelectedUsers = selectedUsers.filter((id) => id !== userId);
+    setSelectedUsers(updatedSelectedUsers);
+  } else {
+    // Kullanıcı seçili değilse ekleyin
+    setSelectedUsers([...selectedUsers, userId]);
+  }
+};
+const handleDeleteBulk = () => {
+  if (selectedUsers.length === 0) {
+    // Hiçbir kullanıcı seçilmediyse uyarı verin veya işlem yapmayın
+    return;
+  }
+  Swal.fire({
+    title: "Are you sure?",
+    html: `You want to delete ${selectedUsers.length} selected user(s)?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete them!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const updatedUserData = userData.filter((user) => !selectedUsers.includes(user.id));
+      setUserData(updatedUserData);
 
+      const updatedFilteredUsers = filteredUsers.filter((user) => !selectedUsers.includes(user.id));
+      setFilteredUsers(updatedFilteredUsers);
 
+      // Seçili kullanıcıları sıfırlayın
+      setSelectedUsers([]);
+
+      Swal.fire({
+        title: "Deleted!",
+        text: "Selected users have been deleted.",
+        icon: "success"
+      });
+    }
+  });
+};
+console.log(selectedUsers);
   return (
     <>
     <div className="flex flex-row  justify-between">
-        <div>
+        <div className="flex">
         <Search userData={userData} setFilteredUsers={setFilteredUsers} />
+        <DeleteBulk onDeleteBulk={handleDeleteBulk}/>
         </div>
+        
         <div className="mr-3">
           <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
             <FaPlus /> <span onClick={() => openModal(null)}> Add user</span>
@@ -151,6 +199,8 @@ const handleDeleteUser = (id) => {
                     aria-describedby="checkbox-1"
                     type="checkbox"
                     className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
+                    onChange={() => handleCheckboxChange(user.id)}
+                    checked={selectedUsers.includes(user.id)}
                   />
                 </div>
               </td>
