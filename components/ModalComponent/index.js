@@ -5,44 +5,56 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from "uuid";
 import Select from "react-select";
-function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
+function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , userToEdit }) {
   // app element belirtildi console hatası almamak için
   /* Bu konfigürasyonu yapmanızın temel amacı, ekran okuyucuların modal açıldığında ana içeriği görmemesini sağlamaktır. Bu, erişilebilirlik kurallarına uygun bir yaklaşımdır. */
   useEffect(() => {
     Modal.setAppElement("body");
   }, []);
 
-  const[selectedFile, setSelectedFile] = useState(null)
+  // dosya eklemeden eklenen image file dosyasını saklamak için
+  const[selectedFile, setSelectedFile] = useState(null);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+  
+    // Dosya seçildiğinde, dosyanın URL'ini oluştur ve formik değerini güncelle
+    const imageUrl = file ? URL.createObjectURL(file) : "";
+    formik.setFieldValue("image", imageUrl);
+  
     setSelectedFile(file);
-    formik.setFieldValue("image", file);
   };
- 
-  const fields = [
-    { name: "name", label: "Name" },
-    { name: "email", label: "Email" },
-    { name: "image", label: "Resim URL" },
-    { name: "position", label: "Position" },
-    { name: "country", label: "Country" },
-    { name: "status", label: "Status" },
-  ];
+  
+  
+ // dosya eklemeden eklenen image file dosyasını saklamak için
+ // formda tutulcak inputların alanı
+ const fields = [
+   { name: "name", label: "Name" },
+   { name: "email", label: "Email" },
+   { name: "image", label: "Resim URL" },
+   { name: "position", label: "Position" },
+   { name: "country", label: "Country" },
+   { name: "status", label: "Status" },
+  ]
+  // formda tutulcak inputların alanı
+  // formdaki status alanının seçenekleri
   const statusOptions = [
     { label: "Select", value: "" },
     { label: "Active", value: "active" },
     { label: "Offline", value: "offline" },
   ];
-
+  // formdaki status alanının seçenekleri
+  // form içeriğinin yup ile içerik kontrolünün sağlanması
   const validationSchema = Yup.object({
-    name: Yup.string().required("Ad alanı zorunludur"),
-    email: Yup.string()
-      .email("Geçersiz email adresi")
-      .required("Email alanı zorunludur"),
-    image: Yup.mixed().required("Resim URL alanı zorunludur"),
-    position: Yup.string().required("Pozisyon alanı zorunludur"),
-    country: Yup.string().required("Ülke alanı zorunludur"),
-    status: Yup.string().required("Durum alanı zorunludur"),
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
+    image: Yup.mixed().required("Image URL is required"),
+    position: Yup.string().required("Position is required"),
+    country: Yup.string().required("Country is required"),
+    status: Yup.string().required("Status is required"),
   });
+  // form içeriğinin yup ile içerik kontrolünün sağlanması
+  // modal divin tasarım css ayarlanması
   const customStyles = {
     content: {
       width: "40%", // Örneğin, modal genişliği
@@ -51,6 +63,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
       borderRadius: "10px",
     },
   };
+  // modal divin tasarım css ayarlanması
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -65,7 +78,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
 
       const userWithUUID = {
         ...values,
-        id: uuidv4(),
+        id: isEditMode ? userToEdit.id : uuidv4(),
         image: imageUrl,
       };
 
@@ -73,23 +86,37 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
       onRequestClose();
       formik.resetForm();
     } catch (error) {
-      console.error("Dosya işlemleri hatası:", error);
+      console.error("File processing error:", error);
     }
   };
   const formik = useFormik({
-    initialValues: formData,
+    initialValues: isEditMode ? userToEdit : formData,
     validationSchema: validationSchema,
     onSubmit: handleFormSubmit,
   });
 
   useEffect(() => {
-    // formik.values değiştiğinde formData'yı güncelle
-    setFormData(formik.values);
-  }, [formik.values]);
+    if (!isEditMode) {
+      // Yeni bir kullanıcı eklemek için modal açıldığında form verilerini sıfırla
+      formik.resetForm();
+      setSelectedFile(null); // Eklenen dosyayı sıfırla
+    } else if (isEditMode && userToEdit) {
+      // Dosya seçiliyse, dosyanın URL'ini oluştur ve formik değerini güncelle
+      const imageUrl = selectedFile ? URL.createObjectURL(selectedFile) : "";
+  
+      // formik.values'i güncelle
+      formik.setValues({
+        ...userToEdit, // userToEdit değerleriyle doldur
+        image: imageUrl, // Dosyanın URL'sini ekleyerek image alanını güncelle
+      });
+    }
+  }, [isEditMode, userToEdit]);
+  console.log("userToEdit:", userToEdit);
+  console.log("formik.values:", formik.values);
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles}>
       <form onSubmit={formik.handleSubmit}>
-        <h1 className="font-[500] text-2xl mb-6">Add new user</h1>
+        <h1 className="font-[500] text-2xl mb-6">{isEditMode ? "Edit user" : "Add new user"}</h1>
         <hr />
 
         <div className="flex flex-wrap mb-4">
@@ -150,7 +177,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm }) {
           type="submit"
           className="bg-btnBg rounded-lg px-4 py-2 mt-8 text-white font-medium flex flex-row items-center "
         >
-          Add user
+          {isEditMode ? "Update user" : "Add user"}
         </button>
       </form>
     </Modal>

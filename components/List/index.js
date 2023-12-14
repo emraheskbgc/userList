@@ -13,27 +13,46 @@ function List() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [userData, setUserData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([])
+  const [editUserId, setEditUserId] = useState(null);
  
-  console.log(userData);
   
   useEffect(() => {
    console.log(filteredUsers);
   }, [filteredUsers]);
+
+
   const handleFormSubmit = (data) => {
-    // Form verilerini kullanıcı verileri olarak sakla
-    setUserData([...userData, data]);
-    const updatedFilteredUsers = [...filteredUsers, data];
-  setFilteredUsers(updatedFilteredUsers);
+    if (editUserId !== null) {
+      // Düzenleme modunda ise, kullanıcı verilerini güncelle
+      const updatedUserData = userData.map((user) =>
+        user.id === editUserId ? { ...user, ...data } : user
+      );
+      setUserData(updatedUserData);
+
+      const updatedFilteredUsers = filteredUsers.map((user) =>
+      user.id === editUserId ? { ...user, ...data } : user
+    );
+    setFilteredUsers(updatedFilteredUsers);
+    } else {
+      // Ekleme modunda ise, yeni kullanıcıyı ekleyin
+      const newUser = { ...data, id: uuidv4() };
+      setUserData([...userData, newUser]);
+      setFilteredUsers([...filteredUsers, newUser]);
+    }
+
     // Modal'ı kapat
     closeModal();
   };
  
 
  
-  const  openModal = () => {
-    setIsModalOpen(true)
-  }
+  const openModal = (userId) => {
+    setEditUserId(userId);
+    setIsModalOpen(true);
+  };
+
   const closeModal = () => {
+    setEditUserId(null);
     setIsModalOpen(false);
   };
 
@@ -82,7 +101,7 @@ const handleDeleteUser = (id) => {
         </div>
         <div className="mr-3">
           <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
-            <FaPlus /> <span onClick={openModal}> Add user</span>
+            <FaPlus /> <span onClick={() => openModal(null)}> Add user</span>
            
           </button>
         </div>
@@ -157,7 +176,7 @@ const handleDeleteUser = (id) => {
                 </div>
               </td>
               <td className="p-4 whitespace-nowrap space-x-2">
-                <button  className="text-white bg-btnEdit font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><FaEdit className="mr-2 h-5 w-5"/>Edit user</button>
+                <button  onClick={() => openModal(user.id)}  className="text-white bg-btnEdit font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><FaEdit className="mr-2 h-5 w-5"/>Edit user</button>
                 <button  onClick={() => handleDeleteUser(user.id)} className="text-white bg-btnDelete font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center" ><RiDeleteBin6Fill className="mr-2 h-5 w-5"/>Delete user</button>
               </td>
              
@@ -171,7 +190,8 @@ const handleDeleteUser = (id) => {
       </div>
 
 
-      <ModalComponent isOpen={isModalOpen} onRequestClose={closeModal}  onSubmitForm={handleFormSubmit} 
+      <ModalComponent isOpen={isModalOpen} onRequestClose={closeModal}  onSubmitForm={handleFormSubmit}  isEditMode={editUserId !== null}
+      userToEdit={userData.find((user) => user.id === editUserId)}
      />
 
     </>
