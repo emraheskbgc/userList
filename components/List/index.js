@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
-import Sorting from "../Sorting";
+
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,7 +154,7 @@ function List() {
     // selectAll state'ini tersine çevir
     setSelectAll(!selectAll);
   };
-
+  // thead başlılara göre sıralama
   const handleSort = (column) => {
     const newOrder =
       sortConfig.column === column && sortConfig.order === "asc" ? "desc" : "asc";
@@ -168,7 +168,7 @@ function List() {
   
     setFilteredUsers(sortedUsers);
   };
-  
+   // thead başlılara göre sıralama
   return (
     <>
       <div className="flex flex-row  justify-between">
@@ -215,14 +215,15 @@ function List() {
                   key={index}
                   onClick={() => handleSort(item)}
                   scope="col"
-                  className="p-4  text-left text-xs font-medium text-gray-500 uppercase"
+                 className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
                 >
-                  {item}
-                  { sortConfig.column === item ? (
+                  
+                  {  sortConfig.column === item ? (
                     <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
                   ) : (
-                    "↓"
+                    index < 4 && "↓"
                   )}
+                    <span>  {item}</span>
                 </th>
               ))}
             </tr>
