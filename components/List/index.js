@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
+import Sorting from "../Sorting";
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +18,7 @@ function List() {
   const [editUserId, setEditUserId] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ column: null, order: null });
 
   useEffect(() => {
     console.log(filteredUsers);
@@ -55,7 +57,7 @@ function List() {
     setIsModalOpen(false);
   };
 
-  const column = ["name", "posıtıon", "country", "status", ""];
+  const column = ["name", "position", "country", "status",""];
   const config = {
     addUserBtn: false,
   };
@@ -152,17 +154,31 @@ function List() {
     // selectAll state'ini tersine çevir
     setSelectAll(!selectAll);
   };
-  console.log(selectedUsers);
+
+  const handleSort = (column) => {
+    const newOrder =
+      sortConfig.column === column && sortConfig.order === "asc" ? "desc" : "asc";
+    setSortConfig({ column, order: newOrder });
+  
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
+      if (a[column] < b[column]) return newOrder === "asc" ? -1 : 1;
+      if (a[column] > b[column]) return newOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  
+    setFilteredUsers(sortedUsers);
+  };
+  
   return (
     <>
       <div className="flex flex-row  justify-between">
         <div className="flex">
-          <Search userData={userData} setFilteredUsers={setFilteredUsers} />
-          {selectedUsers.length === 0 ? (
-            ""
-          ) : (
-            <DeleteBulk onDeleteBulk={handleDeleteBulk} />
-          )}
+          <Search userData={userData} setFilteredUsers={setFilteredUsers} />  
+         
+          
+            <DeleteBulk onDeleteBulk={handleDeleteBulk} selectedUsers={selectedUsers} />
+          
+        
         </div>
 
         <div className="mr-3">
@@ -172,12 +188,13 @@ function List() {
         </div>
       </div>
       <div className="mt-5">
-        <table className="min-w-full">
+        <table className="min-w-full ">
           <thead className="bg-gray-100 ">
             <tr>
               <th
+              
                 scope="col"
-                className="p-4 text-left text-xs font-medium text-gray-500 uppercase"
+                className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
               >
                 <div className="flex items-center ">
                   <input
@@ -196,10 +213,16 @@ function List() {
               {column.map((item, index) => (
                 <th
                   key={index}
+                  onClick={() => handleSort(item)}
                   scope="col"
-                  className="p-4 text-left text-xs font-medium text-gray-500 uppercase"
+                  className="p-4  text-left text-xs font-medium text-gray-500 uppercase"
                 >
                   {item}
+                  { sortConfig.column === item ? (
+                    <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
+                  ) : (
+                    "↓"
+                  )}
                 </th>
               ))}
             </tr>

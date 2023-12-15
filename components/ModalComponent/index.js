@@ -111,8 +111,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
       });
     }
   }, [isEditMode, userToEdit]);
-  console.log("userToEdit:", userToEdit);
-  console.log("formik.values:", formik.values);
+ 
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles}>
       <form onSubmit={formik.handleSubmit}>
