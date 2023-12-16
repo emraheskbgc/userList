@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
 
-
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -57,7 +56,7 @@ function List() {
     setIsModalOpen(false);
   };
 
-  const column = ["name", "position", "country", "status",""];
+  const column = ["name", "position", "country", "status", ""];
   const config = {
     addUserBtn: false,
   };
@@ -107,7 +106,7 @@ function List() {
       // Hiçbir kullanıcı seçilmediyse uyarı verin veya işlem yapmayın
       return;
     }
-    
+
     Swal.fire({
       title: "Are you sure?",
       html: `You want to delete ${selectedUsers.length} selected user(s)?`,
@@ -139,10 +138,10 @@ function List() {
       }
     });
   };
-  
+
   const handleSelectAll = () => {
     const allUserIds = filteredUsers.map((user) => user.id);
-  
+
     if (selectAll) {
       // Eğer tümünü seçiliyse, tüm seçimleri kaldır
       setSelectedUsers([]);
@@ -150,49 +149,50 @@ function List() {
       // Eğer tümü seçili değilse, tüm kullanıcıları seç
       setSelectedUsers(allUserIds);
     }
-  
+
     // selectAll state'ini tersine çevir
     setSelectAll(!selectAll);
   };
   // thead başlılara göre sıralama
   const handleSort = (column) => {
     const newOrder =
-      sortConfig.column === column && sortConfig.order === "asc" ? "desc" : "asc";
+      sortConfig.column === column && sortConfig.order === "asc"
+        ? "desc"
+        : "asc";
     setSortConfig({ column, order: newOrder });
-  
+
     const sortedUsers = [...filteredUsers].sort((a, b) => {
       if (a[column] < b[column]) return newOrder === "asc" ? -1 : 1;
       if (a[column] > b[column]) return newOrder === "asc" ? 1 : -1;
       return 0;
     });
-  
+
     setFilteredUsers(sortedUsers);
   };
-   // thead başlılara göre sıralama
+  // thead başlılara göre sıralama
   return (
     <>
-      <div className="flex flex-row  justify-between">
-        <div className="flex">
-          <Search userData={userData} setFilteredUsers={setFilteredUsers} />  
-         
-          
-            <DeleteBulk onDeleteBulk={handleDeleteBulk} selectedUsers={selectedUsers} />
-          
-        
+      <div className="flex flex-col md:flex-row md:justify-between">
+        <div className="flex flex-col md:flex-row">
+          <Search userData={userData} setFilteredUsers={setFilteredUsers} />
+
+          <DeleteBulk
+            onDeleteBulk={handleDeleteBulk}
+            selectedUsers={selectedUsers}
+          />
         </div>
 
-        <div className="mr-3">
+        <div className="md:mr-3 mt-3 md:mt-0">
           <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
             <FaPlus /> <span onClick={() => openModal(null)}> Add user</span>
           </button>
         </div>
       </div>
       <div className="mt-5">
-        <table className="min-w-full ">
-          <thead className="bg-gray-100 ">
-            <tr>
+        <table className="min-w-full overflow-x-auto">
+          <thead className="md:bg-gray-100 ">
+            <tr >
               <th
-              
                 scope="col"
                 className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
               >
@@ -215,22 +215,23 @@ function List() {
                   key={index}
                   onClick={() => handleSort(item)}
                   scope="col"
-                 className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
+                  className={`p-4 text-left text-xs font-medium text-gray-500 uppercase ${
+                    index >0 &&   "hidden md:table-cell"
+                  }`}
                 >
-                  
-                  {  sortConfig.column === item ? (
+                  {sortConfig.column === item ? (
                     <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
                   ) : (
                     index < 4 && "↓"
                   )}
-                    <span>  {item}</span>
+                  <span> {item}</span>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user, index) => (
-              <tr key={index} className="hover:bg-gray-100 cursor-pointer">
+              <tr key={index} className="hover:bg-gray-100  cursor-pointer">
                 <td scope="col" className="p-4  w-4">
                   <div className="flex items-center ">
                     <input
@@ -243,49 +244,49 @@ function List() {
                     />
                   </div>
                 </td>
-                <td className="p-4 flex items-center whitespace-nowrap space-x-6 mr-12 lg:mr-0 ">
+                <td className="p-4 flex mt-4 md:mt-0  items-center whitespace-nowrap space-x-6 md:mr-12 lg:mr-0 ">
                   <img
                     src={user.image}
                     alt={user.image}
                     className="w-10 h-10 rounded-full"
                   />
-                  <div className="text-sm font-normal text-gray-500">
+                  <div className="text-sm font-normal text-gray-500 md:text-base md:font-semibold md:text-gray-900">
                     <div className="text-base font-semibold text-gray-900">
                       {user.name}
                     </div>
-                    <div className="text-sm font-normal text-gray-500">
+                    <div className="text-sm font-normal text-gray-500 hidden md:block">
                       {user.email}
                     </div>
                   </div>
                 </td>
-                <td className="text-lg">{user.position}</td>
-                <td className="text-lg">{user.country} </td>
-                <td className="p-4 whitespace-nowrap text-base font-normal text-gray-900">
-                  <div className="flex items-center">
+                <td className="text-lg text-center pr-4 hidden md:table-cell  ">{user.position}</td>
+                <td className="text-lg text-center pr-4  hidden md:table-cell ">{user.country} </td>
+                <td className="p-4 md:whitespace-nowrap md:text-base md:font-normal md:text-gray-900">
+                  <div className="flex  items-center">
                     <div
-                      className={`h-2.5 w-2.5 rounded-full ${
+                      className={`h-2.5 w-2.5  hidden md:table-cell rounded-full ${
                         user.status === "active"
                           ? "bg-green-400 "
                           : "bg-red-500"
                       } mr-2`}
                     ></div>
-                    {user.status}
+                   <span className=" hidden md:table-cell"> {user.status}</span>
                   </div>
                 </td>
-                <td className="p-4 whitespace-nowrap space-x-2">
+                <td className="p-4 md:whitespace-nowrap space-x-2  ">
                   <button
                     onClick={() => openModal(user.id)}
-                    className="text-white bg-btnEdit font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center"
+                    className="text-white bg-btnEdit font-medium rounded-lg text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
                   >
-                    <FaEdit className="mr-2 h-5 w-5" />
+                    <FaEdit className="mr-1 md:mr-2 md:h-5 md:w-5" />
                     Edit user
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user.id)}
-                    className="text-white bg-btnDelete font-medium rounded-lg text-md inline-flex items-center px-3 py-2 text-center"
+                    className="text-white bg-btnDelete font-medium rounded-lg mt-2 md:mt-0 text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
                   >
-                    <RiDeleteBin6Fill className="mr-2 h-5 w-5" />
-                    Delete user
+                    <RiDeleteBin6Fill className="mr-1   md:mr-2 md:h-5 md:w-5" />
+                    Delete
                   </button>
                 </td>
               </tr>

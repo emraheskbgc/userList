@@ -32,9 +32,11 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
    { name: "name", label: "Name" },
    { name: "email", label: "Email" },
    { name: "image", label: "Resim URL" },
+   
    { name: "position", label: "Position" },
    { name: "country", label: "Country" },
    { name: "status", label: "Status" },
+   
   ]
   // formda tutulcak inputların alanı
   // formdaki status alanının seçenekleri
@@ -57,7 +59,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
   // modal divin tasarım css ayarlanması
   const customStyles = {
     content: {
-      width: "40%", // Örneğin, modal genişliği
+      width: "45%", // Örneğin, modal genişliği
       height: "60%", // Örneğin, modal yüksekliği
       margin: "auto",
       borderRadius: "10px",
@@ -99,7 +101,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
     if (!isEditMode) {
       // Yeni bir kullanıcı eklemek için modal açıldığında form verilerini sıfırla
       formik.resetForm();
-      setSelectedFile(null); // Eklenen dosyayı sıfırla
+      // Eklenen dosyayı sıfırla
     } else if (isEditMode && userToEdit) {
       // Dosya seçiliyse, dosyanın URL'ini oluştur ve formik değerini güncelle
       const imageUrl = selectedFile ? URL.createObjectURL(selectedFile) : "";
@@ -109,20 +111,22 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
         ...userToEdit, // userToEdit değerleriyle doldur
         image: imageUrl, // Dosyanın URL'sini ekleyerek image alanını güncelle
       });
+     
     }
+    
   }, [isEditMode, userToEdit]);
  
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles}>
-      <form onSubmit={formik.handleSubmit}>
-        <h1 className="font-[500] text-2xl mb-6">{isEditMode ? "Edit user" : "Add new user"}</h1>
+      <form onSubmit={formik.handleSubmit} className="p-4">
+        <h1 className="font-semibold text-xl mb-6 text-center">{isEditMode ? "Edit user" : "Add new user"}</h1>
         <hr />
 
-        <div className="flex flex-wrap mb-4">
+        <div className="flex flex-col mb-4 mt-3">
           {fields.map((field) => (
             <div
               key={field.name}
-              className="flex flex-wrap flex-col mr-4 mb-4 mt-4"
+              className="flex flex-col mb-4"
             >
               <label className="mb-1">{field.label}</label>
               {field.name === "status" ? (
@@ -137,18 +141,18 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
                   value={statusOptions.find(
                     (option) => option.value === formik.values[field.name]
                   )}
-                  className="w-[250px]"
+                  className="w-full"
                 />
               ): field.name === "image" ? (
-                <div>
-                <label className="mb-1">{field.label}</label>
+                <div className="border w-full flex flex-col">
+              
                 <input
                     type="file"
                     id={field.name}
                     name={field.name}
                     onChange={handleFileChange}
                     onBlur={formik.handleBlur}
-                    className="border"
+                    
                   />
                 </div>
               ) : (
@@ -159,7 +163,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values[field.name]}
-                  className="bg-gray-100 px-3 text-gray-700 border w-[250px] rounded-md h-[40px]"
+                  className="bg-gray-100 px-3 text-gray-700 border rounded-md h-[40px] w-full"
                 />
               )}
 
@@ -174,7 +178,7 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
         <hr />
         <button
           type="submit"
-          className="bg-btnBg rounded-lg px-4 py-2 mt-8 text-white font-medium flex flex-row items-center "
+          className="bg-btnBg rounded-lg px-4 py-2 mt-4 text-white font-medium w-full"
         >
           {isEditMode ? "Update user" : "Add user"}
         </button>

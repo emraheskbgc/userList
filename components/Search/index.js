@@ -23,7 +23,7 @@ function Search({ userData, setFilteredUsers }) {
         value={searchTerm}
         onChange={handleSearch}
         type="text"
-        className="bg-gray-100 border border-1 border-srcColor placeholder:text-srcPlace rounded-md px-2 py-1 w-[350px]"
+        className="bg-gray-100 border border-1 border-srcColor placeholder:text-srcPlace rounded-md px-2 py-1 md:w-[350px]"
         placeholder="Search for users"
       />
     </>
