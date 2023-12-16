@@ -7,7 +7,7 @@ import List from "../List";
 function HomePage() {
   return (
     <>
-      <div className="w-[80%] border px-3 py-3">
+      <div className="md:w-[80%] w-[100%] border px-3 py-3">
         <div className="flex flex-row text-center items-center space-x-2  ">
           <TiHome />
           <span> Home</span> <FaAngleRight /> <span>Users</span>

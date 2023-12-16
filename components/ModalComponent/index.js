@@ -57,11 +57,17 @@ function ModalComponent({ isOpen, onRequestClose, onSubmitForm, isEditMode , use
   });
   // form içeriğinin yup ile içerik kontrolünün sağlanması
   // modal divin tasarım css ayarlanması
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 600; // Mobil ekran genişliği kontrolü
   const customStyles = {
     content: {
-      width: "45%", // Örneğin, modal genişliği
+      width: isMobile ? "90%" : "45%", // Mobilde genişlik daha dar
       height: "60%", // Örneğin, modal yüksekliği
-      margin: "auto",
+      margin: isMobile ? "0" : "auto", // Masaüstünde sadece yatayda merkezlemek için
+      top: isMobile ? "50%" : "20%", // Mobilde sayfanın ortasına konumlandır
+      bottom: isMobile ? "auto" : "",
+      left: isMobile ? "50%" : "25%", // Mobilde sayfanın ortasına konumlandır
+      right: isMobile ? "auto" : "",
+      transform: isMobile ? "translate(-50%, -50%)" : "none", // Mobilde sayfanın ortasına konumlandır
       borderRadius: "10px",
     },
   };
