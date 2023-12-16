@@ -11,9 +11,8 @@ import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
 import styles from "./styles.module.css";
 import ClearFilter from "../ClearFilter";
-import {listConfig}  from "@/config";
 
-function List({config = listConfig}) {
+function List() {
   const [isModalOpen, setIsModalOpen] = useState(false); // modalın açılıp kapanmasını kontrol eden state
   const [userData, setUserData] = useState([]); // eklenen user'ların tutulduğu state
   const [filteredUsers, setFilteredUsers] = useState([]); // search bar için userDatada bulunan arrayin filtrelenip listeyi anlık güncellenmesini sağlayan state
@@ -21,6 +20,17 @@ function List({config = listConfig}) {
   const [selectedUsers, setSelectedUsers] = useState([]); // kullanıcıları toplu silmek için seçilen kullanıcıların tutulduğu state
   const [selectAll, setSelectAll] = useState(false); // kullanıcının checkbox ın işaretlenip işareti kaldırmayı tutan state
   const [sortConfig, setSortConfig] = useState({ column: null, order: null }); // sıralama işlemi yapmak için kullanılan state
+
+  //Config ayarları
+  const config = {
+    addUserBtn: true,
+    searchInput: true,
+    clearAllBtn: true,
+    clearFilterBtn: true,
+    deleteBtn: true,
+    editBtn: true,
+  };
+  //Config ayarları
 
   useEffect(() => {
     console.log(filteredUsers);
@@ -53,7 +63,6 @@ function List({config = listConfig}) {
   };
   // modalın durumunu anlamak için kullanınlan fonksiyon
 
-  
   // modalı açıp kapatmayı kontrol eden fonksiyon
   const openModal = (userId) => {
     setEditUserId(userId);
@@ -65,10 +74,9 @@ function List({config = listConfig}) {
     setIsModalOpen(false);
   };
   // modalı açıp kapatmayı kontrol eden fonksiyon
-  
+
   // tablo başlığının tutulduğu dinamik array
   const column = ["name", "position", "country", "status", "action"];
- 
   // tablo başlığının tutulduğu dinamik array
 
   // Kullanıcı Silme Fonksiyonu
@@ -121,39 +129,39 @@ function List({config = listConfig}) {
       // Hiçbir kullanıcı seçilmediyse uyarı verin veya işlem yapmayın
       return;
     }
-  // Seçili kullanıcıların toplu şekilde silinmesini sağlayan fonksiyon
-  // Toplu silmede kullanılan swal alert
-  Swal.fire({
-    title: "Are you sure?",
-    html: `You want to delete ${selectedUsers.length} selected user(s)?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete them!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const updatedUserData = userData.filter(
-        (user) => !selectedUsers.includes(user.id)
-      );
-      setUserData(updatedUserData);
+    // Seçili kullanıcıların toplu şekilde silinmesini sağlayan fonksiyon
+    // Toplu silmede kullanılan swal alert
+    Swal.fire({
+      title: "Are you sure?",
+      html: `You want to delete ${selectedUsers.length} selected user(s)?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete them!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedUserData = userData.filter(
+          (user) => !selectedUsers.includes(user.id)
+        );
+        setUserData(updatedUserData);
 
-      const updatedFilteredUsers = filteredUsers.filter(
-        (user) => !selectedUsers.includes(user.id)
-      );
-      setFilteredUsers(updatedFilteredUsers);
+        const updatedFilteredUsers = filteredUsers.filter(
+          (user) => !selectedUsers.includes(user.id)
+        );
+        setFilteredUsers(updatedFilteredUsers);
 
-      // Seçili kullanıcıları sıfırlayın
-      setSelectedUsers([]);
+        // Seçili kullanıcıları sıfırlayın
+        setSelectedUsers([]);
 
-      Swal.fire({
-        title: "Deleted!",
-        text: "Selected users have been deleted.",
-        icon: "success",
-      });
-    }
-  });
-  // Toplu silmede kullanılan swal alert
+        Swal.fire({
+          title: "Deleted!",
+          text: "Selected users have been deleted.",
+          icon: "success",
+        });
+      }
+    });
+    // Toplu silmede kullanılan swal alert
   };
 
   // head kısmında bulunan checkbox ile listedeki tüm userların seçilmesini sağlayan fonksiyon
@@ -172,7 +180,7 @@ function List({config = listConfig}) {
     setSelectAll(!selectAll);
   };
   // head kısmında bulunan checkbox ile listedeki tüm userların seçilmesini sağlayan fonksiyon
-  
+
   // thead başlılara göre sıralama
   const handleSort = (column) => {
     const newOrder =
@@ -190,34 +198,41 @@ function List({config = listConfig}) {
     setFilteredUsers(sortedUsers);
   };
   // thead başlılara göre sıralama
-  console.log(listConfig);
+
   return (
     <>
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col md:flex-row">
-         <div>
-        { config.search && <Search userData={userData} setFilteredUsers={setFilteredUsers} />}
-         </div>
-          <div className="flex flex-row space-x-2">
-           <DeleteBulk
-            onDeleteBulk={handleDeleteBulk}
-            selectedUsers={selectedUsers}
-          />
-          <ClearFilter
-            setFilteredUsers={setFilteredUsers}
-            setSelectedUsers={setSelectedUsers}
-            setSelectAll={setSelectAll}
-            setSortConfig={setSortConfig}
-            userData={userData}
-          />
+          <div>
+            {config.searchInput && (
+              <Search userData={userData} setFilteredUsers={setFilteredUsers} />
+            )}
           </div>
-         
+          <div className="flex flex-row space-x-2">
+            {config.clearAllBtn && (
+              <DeleteBulk
+                onDeleteBulk={handleDeleteBulk}
+                selectedUsers={selectedUsers}
+              />
+            )}
+            {config.clearFilterBtn && (
+              <ClearFilter
+                setFilteredUsers={setFilteredUsers}
+                setSelectedUsers={setSelectedUsers}
+                setSelectAll={setSelectAll}
+                setSortConfig={setSortConfig}
+                userData={userData}
+              />
+            )}
+          </div>
         </div>
 
         <div className="md:mr-3 mt-3 md:mt-0">
-          <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
-            <FaPlus /> <span onClick={() => openModal(null)}> Add user</span>
-          </button>
+          {config.addUserBtn && (
+            <button className="bg-btnBg rounded-md px-4 py-2 text-white font-medium flex flex-row items-center space-x-3">
+              <FaPlus /> <span onClick={() => openModal(null)}> Add user</span>
+            </button>
+          )}
         </div>
       </div>
       <div className={styles.table}>
@@ -311,20 +326,24 @@ function List({config = listConfig}) {
                     </div>
                   </td>
                   <td className="p-4 md:whitespace-nowrap space-x-2  ">
-                    <button
-                      onClick={() => openModal(user.id)}
-                      className="text-white bg-btnEdit font-medium rounded-lg text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
-                    >
-                      <FaEdit className="mr-1 md:mr-2 md:h-5 md:w-5" />
-                      Edit user
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="text-white bg-btnDelete font-medium rounded-lg mt-2 md:mt-0 text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
-                    >
-                      <RiDeleteBin6Fill className="mr-1   md:mr-2 md:h-5 md:w-5" />
-                      Delete
-                    </button>
+                    {config.editBtn && (
+                      <button
+                        onClick={() => openModal(user.id)}
+                        className="text-white bg-btnEdit font-medium rounded-lg text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
+                      >
+                        <FaEdit className="mr-1 md:mr-2 md:h-5 md:w-5" />
+                        Edit user
+                      </button>
+                    )}
+                    {config.deleteBtn && (
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="text-white bg-btnDelete font-medium rounded-lg mt-2 md:mt-0 text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
+                      >
+                        <RiDeleteBin6Fill className="mr-1   md:mr-2 md:h-5 md:w-5" />
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
