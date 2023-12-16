@@ -11,8 +11,9 @@ import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
 import styles from "./styles.module.css";
 import ClearFilter from "../ClearFilter";
+import {listConfig}  from "@/config";
 
-function List() {
+function List({config = listConfig}) {
   const [isModalOpen, setIsModalOpen] = useState(false); // modalın açılıp kapanmasını kontrol eden state
   const [userData, setUserData] = useState([]); // eklenen user'ların tutulduğu state
   const [filteredUsers, setFilteredUsers] = useState([]); // search bar için userDatada bulunan arrayin filtrelenip listeyi anlık güncellenmesini sağlayan state
@@ -67,9 +68,7 @@ function List() {
   
   // tablo başlığının tutulduğu dinamik array
   const column = ["name", "position", "country", "status", "action"];
-  const config = {
-    addUserBtn: false,
-  };
+ 
   // tablo başlığının tutulduğu dinamik array
 
   // Kullanıcı Silme Fonksiyonu
@@ -191,12 +190,13 @@ function List() {
     setFilteredUsers(sortedUsers);
   };
   // thead başlılara göre sıralama
+  console.log(listConfig);
   return (
     <>
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col md:flex-row">
          <div>
-         <Search userData={userData} setFilteredUsers={setFilteredUsers} />
+        { config.search && <Search userData={userData} setFilteredUsers={setFilteredUsers} />}
          </div>
           <div className="flex flex-row space-x-2">
            <DeleteBulk
