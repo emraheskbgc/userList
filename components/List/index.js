@@ -13,18 +13,21 @@ import styles from "./styles.module.css";
 import ClearFilter from "../ClearFilter";
 
 function List() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userData, setUserData] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [editUserId, setEditUserId] = useState(null);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ column: null, order: null });
+  const [isModalOpen, setIsModalOpen] = useState(false); // modalın açılıp kapanmasını kontrol eden state
+  const [userData, setUserData] = useState([]); // eklenen user'ların tutulduğu state
+  const [filteredUsers, setFilteredUsers] = useState([]); // search bar için userDatada bulunan arrayin filtrelenip listeyi anlık güncellenmesini sağlayan state
+  const [editUserId, setEditUserId] = useState(null); // user'ların düzenlenmesini sağlayan state
+  const [selectedUsers, setSelectedUsers] = useState([]); // kullanıcıları toplu silmek için seçilen kullanıcıların tutulduğu state
+  const [selectAll, setSelectAll] = useState(false); // kullanıcının checkbox ın işaretlenip işareti kaldırmayı tutan state
+  const [sortConfig, setSortConfig] = useState({ column: null, order: null }); // sıralama işlemi yapmak için kullanılan state
 
   useEffect(() => {
     console.log(filteredUsers);
   }, [filteredUsers]);
 
+  //
+
+  // modalın durumunu anlamak için kullanınlan fonksiyon
   const handleFormSubmit = (data) => {
     if (editUserId !== null) {
       // Düzenleme modunda ise, kullanıcı verilerini güncelle
@@ -47,7 +50,10 @@ function List() {
     // Modal'ı kapat
     closeModal();
   };
+  // modalın durumunu anlamak için kullanınlan fonksiyon
 
+  
+  // modalı açıp kapatmayı kontrol eden fonksiyon
   const openModal = (userId) => {
     setEditUserId(userId);
     setIsModalOpen(true);
@@ -57,11 +63,14 @@ function List() {
     setEditUserId(null);
     setIsModalOpen(false);
   };
-
+  // modalı açıp kapatmayı kontrol eden fonksiyon
+  
+  // tablo başlığının tutulduğu dinamik array
   const column = ["name", "position", "country", "status", "action"];
   const config = {
     addUserBtn: false,
   };
+  // tablo başlığının tutulduğu dinamik array
 
   // Kullanıcı Silme Fonksiyonu
   // Silme işleminde swalAlert kullanılmıştır
@@ -93,6 +102,8 @@ function List() {
     });
   };
   // Kullanıcı Silme Fonksiyonu
+
+  // Kullanıcının checkbox ının işaretli olup olmadığını kontrol eden fonksiyon
   const handleCheckboxChange = (userId) => {
     if (selectedUsers.includes(userId)) {
       // Kullanıcı zaten seçili ise kaldır
@@ -103,44 +114,50 @@ function List() {
       setSelectedUsers([...selectedUsers, userId]);
     }
   };
+  // Kullanıcının checkbox ının işaretli olup olmadığını kontrol eden fonksiyon
+
+  // Seçili kullanıcıların toplu şekilde silinmesini sağlayan fonksiyon
   const handleDeleteBulk = () => {
     if (selectedUsers.length === 0) {
       // Hiçbir kullanıcı seçilmediyse uyarı verin veya işlem yapmayın
       return;
     }
+  // Seçili kullanıcıların toplu şekilde silinmesini sağlayan fonksiyon
+  // Toplu silmede kullanılan swal alert
+  Swal.fire({
+    title: "Are you sure?",
+    html: `You want to delete ${selectedUsers.length} selected user(s)?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete them!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const updatedUserData = userData.filter(
+        (user) => !selectedUsers.includes(user.id)
+      );
+      setUserData(updatedUserData);
 
-    Swal.fire({
-      title: "Are you sure?",
-      html: `You want to delete ${selectedUsers.length} selected user(s)?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete them!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const updatedUserData = userData.filter(
-          (user) => !selectedUsers.includes(user.id)
-        );
-        setUserData(updatedUserData);
+      const updatedFilteredUsers = filteredUsers.filter(
+        (user) => !selectedUsers.includes(user.id)
+      );
+      setFilteredUsers(updatedFilteredUsers);
 
-        const updatedFilteredUsers = filteredUsers.filter(
-          (user) => !selectedUsers.includes(user.id)
-        );
-        setFilteredUsers(updatedFilteredUsers);
+      // Seçili kullanıcıları sıfırlayın
+      setSelectedUsers([]);
 
-        // Seçili kullanıcıları sıfırlayın
-        setSelectedUsers([]);
-
-        Swal.fire({
-          title: "Deleted!",
-          text: "Selected users have been deleted.",
-          icon: "success",
-        });
-      }
-    });
+      Swal.fire({
+        title: "Deleted!",
+        text: "Selected users have been deleted.",
+        icon: "success",
+      });
+    }
+  });
+  // Toplu silmede kullanılan swal alert
   };
 
+  // head kısmında bulunan checkbox ile listedeki tüm userların seçilmesini sağlayan fonksiyon
   const handleSelectAll = () => {
     const allUserIds = filteredUsers.map((user) => user.id);
 
@@ -155,6 +172,8 @@ function List() {
     // selectAll state'ini tersine çevir
     setSelectAll(!selectAll);
   };
+  // head kısmında bulunan checkbox ile listedeki tüm userların seçilmesini sağlayan fonksiyon
+  
   // thead başlılara göre sıralama
   const handleSort = (column) => {
     const newOrder =
