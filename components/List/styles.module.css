@@ -1,0 +1,13 @@
+.table{
+    width: 100%;
+    overflow-x: auto;
+  }
+  /* Bu stil, mobil ekranlarda ok işaretlerini yan yana getirmek için kullanılacak */
+.sortable-header {
+    min-width: 150px;
+  }
+  
+  /* İcon stilini düzenlemek için, bu stil de eklenmeli */
+  .sort-icon {
+    margin-left: 0.5rem; /* İstediğiniz boşluk değerini ayarlayabilirsiniz */
+  }

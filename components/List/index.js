@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
+import styles from "./styles.module.css"
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +57,7 @@ function List() {
     setIsModalOpen(false);
   };
 
-  const column = ["name", "position", "country", "status", ""];
+  const column = ["name", "position", "country", "status", "action"];
   const config = {
     addUserBtn: false,
   };
@@ -188,8 +189,9 @@ function List() {
           </button>
         </div>
       </div>
-      <div className="mt-5">
-        <table className="min-w-full overflow-x-auto">
+      <div className={styles.table}>
+      <div className="mt-5 overflow-x-auto">
+        <table className="min-w-full ">
           <thead className="md:bg-gray-100 ">
             <tr >
               <th
@@ -215,16 +217,16 @@ function List() {
                   key={index}
                   onClick={() => handleSort(item)}
                   scope="col"
-                  className={`p-4 text-left text-xs font-medium text-gray-500 uppercase ${
-                    index >0 &&   "hidden md:table-cell"
-                  }`}
+                  className={`p-4  text-left text-xs font-medium text-gray-500 uppercase ${
+                    index > 5 && "hidden md:table-cell"
+                  } ${styles['sortable-header']}`}
                 >
                   {sortConfig.column === item ? (
                     <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
                   ) : (
-                    index < 4 && "↓"
+                   <span>{ index < 4 && "↓"}</span>
                   )}
-                  <span> {item}</span>
+                  <span className={styles['sort-icon']}> {item}</span>
                 </th>
               ))}
             </tr>
@@ -244,13 +246,13 @@ function List() {
                     />
                   </div>
                 </td>
-                <td className="p-4 flex mt-4 md:mt-0  items-center whitespace-nowrap space-x-6 md:mr-12 lg:mr-0 ">
+                <td className="p-4 flex mt-4 md:mt-0  items-center whitespace-nowrap space-x-6  mr-6 md:mr-12 lg:mr-0 ">
                   <img
                     src={user.image}
                     alt={user.image}
                     className="w-10 h-10 rounded-full"
                   />
-                  <div className="text-sm font-normal text-gray-500 md:text-base md:font-semibold md:text-gray-900">
+                  <div className=" text-xs md:text-sm font-normal text-gray-500 md:text-base md:font-semibold md:text-gray-900">
                     <div className="text-base font-semibold text-gray-900">
                       {user.name}
                     </div>
@@ -259,18 +261,18 @@ function List() {
                     </div>
                   </div>
                 </td>
-                <td className="text-lg text-center pr-4 hidden md:table-cell  ">{user.position}</td>
-                <td className="text-lg text-center pr-4  hidden md:table-cell ">{user.country} </td>
+                <td className="text-lg text-center pr-4   ">{user.position}</td>
+                <td className="text-lg text-center pr-4   ">{user.country} </td>
                 <td className="p-4 md:whitespace-nowrap md:text-base md:font-normal md:text-gray-900">
                   <div className="flex  items-center">
                     <div
-                      className={`h-2.5 w-2.5  hidden md:table-cell rounded-full ${
+                      className={`h-2.5 w-2.5   rounded-full ${
                         user.status === "active"
                           ? "bg-green-400 "
                           : "bg-red-500"
                       } mr-2`}
                     ></div>
-                   <span className=" hidden md:table-cell"> {user.status}</span>
+                   <span className=" "> {user.status}</span>
                   </div>
                 </td>
                 <td className="p-4 md:whitespace-nowrap space-x-2  ">
@@ -294,6 +296,8 @@ function List() {
           </tbody>
         </table>
       </div>
+      </div>
+      
 
       <ModalComponent
         isOpen={isModalOpen}
