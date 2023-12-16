@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
 import Search from "../Search";
 import DeleteBulk from "../DeleteBulk";
-import styles from "./styles.module.css"
+import styles from "./styles.module.css";
+import ClearFilter from "../ClearFilter";
 
 function List() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -175,12 +176,23 @@ function List() {
     <>
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col md:flex-row">
-          <Search userData={userData} setFilteredUsers={setFilteredUsers} />
-
-          <DeleteBulk
+         <div>
+         <Search userData={userData} setFilteredUsers={setFilteredUsers} />
+         </div>
+          <div className="flex flex-row space-x-2">
+           <DeleteBulk
             onDeleteBulk={handleDeleteBulk}
             selectedUsers={selectedUsers}
           />
+          <ClearFilter
+            setFilteredUsers={setFilteredUsers}
+            setSelectedUsers={setSelectedUsers}
+            setSelectAll={setSelectAll}
+            setSortConfig={setSortConfig}
+            userData={userData}
+          />
+          </div>
+         
         </div>
 
         <div className="md:mr-3 mt-3 md:mt-0">
@@ -190,114 +202,117 @@ function List() {
         </div>
       </div>
       <div className={styles.table}>
-      <div className="mt-5 overflow-x-auto">
-        <table className="min-w-full ">
-          <thead className="md:bg-gray-100 ">
-            <tr >
-              <th
-                scope="col"
-                className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
-              >
-                <div className="flex items-center ">
-                  <input
-                    id="checkbox-all"
-                    aria-describedby="checkbox-all-description"
-                    type="checkbox"
-                    className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
-                    onChange={() => handleSelectAll()}
-                    checked={selectAll}
-                  />
-                  <label htmlFor="checkbox-all" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th>
-              {column.map((item, index) => (
+        <div className="mt-5 overflow-x-auto">
+          <table className="min-w-full ">
+            <thead className="md:bg-gray-100 ">
+              <tr>
                 <th
-                  key={index}
-                  onClick={() => handleSort(item)}
                   scope="col"
-                  className={`p-4  text-left text-xs font-medium text-gray-500 uppercase ${
-                    index > 5 && "hidden md:table-cell"
-                  } ${styles['sortable-header']}`}
+                  className="p-4 text-left text-xs font-medium text-gray-500 uppercase "
                 >
-                  {sortConfig.column === item ? (
-                    <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
-                  ) : (
-                   <span>{ index < 4 && "↓"}</span>
-                  )}
-                  <span className={styles['sort-icon']}> {item}</span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user, index) => (
-              <tr key={index} className="hover:bg-gray-100  cursor-pointer">
-                <td scope="col" className="p-4  w-4">
                   <div className="flex items-center ">
                     <input
-                      id={`checkbox-${uuidv4()}`}
-                      aria-describedby="checkbox-1"
+                      id="checkbox-all"
+                      aria-describedby="checkbox-all-description"
                       type="checkbox"
                       className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
-                      onChange={() => handleCheckboxChange(user.id)}
-                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => handleSelectAll()}
+                      checked={selectAll}
                     />
+                    <label htmlFor="checkbox-all" className="sr-only">
+                      checkbox
+                    </label>
                   </div>
-                </td>
-                <td className="p-4 flex mt-4 md:mt-0  items-center whitespace-nowrap space-x-6  mr-6 md:mr-12 lg:mr-0 ">
-                  <img
-                    src={user.image}
-                    alt={user.image}
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className=" text-xs md:text-sm font-normal text-gray-500 md:text-base md:font-semibold md:text-gray-900">
-                    <div className="text-base font-semibold text-gray-900">
-                      {user.name}
-                    </div>
-                    <div className="text-sm font-normal text-gray-500 hidden md:block">
-                      {user.email}
-                    </div>
-                  </div>
-                </td>
-                <td className="text-lg text-center pr-4   ">{user.position}</td>
-                <td className="text-lg text-center pr-4   ">{user.country} </td>
-                <td className="p-4 md:whitespace-nowrap md:text-base md:font-normal md:text-gray-900">
-                  <div className="flex  items-center">
-                    <div
-                      className={`h-2.5 w-2.5   rounded-full ${
-                        user.status === "active"
-                          ? "bg-green-400 "
-                          : "bg-red-500"
-                      } mr-2`}
-                    ></div>
-                   <span className=" "> {user.status}</span>
-                  </div>
-                </td>
-                <td className="p-4 md:whitespace-nowrap space-x-2  ">
-                  <button
-                    onClick={() => openModal(user.id)}
-                    className="text-white bg-btnEdit font-medium rounded-lg text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
+                </th>
+                {column.map((item, index) => (
+                  <th
+                    key={index}
+                    onClick={() => handleSort(item)}
+                    scope="col"
+                    className={`p-4  text-left text-xs font-medium text-gray-500 uppercase ${
+                      index > 5 && "hidden md:table-cell"
+                    } ${styles["sortable-header"]}`}
                   >
-                    <FaEdit className="mr-1 md:mr-2 md:h-5 md:w-5" />
-                    Edit user
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="text-white bg-btnDelete font-medium rounded-lg mt-2 md:mt-0 text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
-                  >
-                    <RiDeleteBin6Fill className="mr-1   md:mr-2 md:h-5 md:w-5" />
-                    Delete
-                  </button>
-                </td>
+                    {sortConfig.column === item ? (
+                      <span>{sortConfig.order === "asc" ? "↑" : "↓"}</span>
+                    ) : (
+                      <span>{index < 4 && "↓"}</span>
+                    )}
+                    <span className={styles["sort-icon"]}> {item}</span>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user, index) => (
+                <tr key={index} className="hover:bg-gray-100  cursor-pointer">
+                  <td scope="col" className="p-4  w-4">
+                    <div className="flex items-center ">
+                      <input
+                        id={`checkbox-${uuidv4()}`}
+                        aria-describedby="checkbox-1"
+                        type="checkbox"
+                        className="bg-gray-50 accent-btnBg border-gray-300 focus:ring-2 focus:ring-cyan-200 h-4 w-4 rounded"
+                        onChange={() => handleCheckboxChange(user.id)}
+                        checked={selectedUsers.includes(user.id)}
+                      />
+                    </div>
+                  </td>
+                  <td className="p-4 flex mt-4 md:mt-0  items-center whitespace-nowrap space-x-6  mr-6 md:mr-12 lg:mr-0 ">
+                    <img
+                      src={user.image}
+                      alt={user.image}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className=" text-xs  font-normal text-gray-500 md:text-base md:font-semibold md:text-gray-900">
+                      <div className="text-base font-semibold text-gray-900">
+                        {user.name}
+                      </div>
+                      <div className="text-sm font-normal text-gray-500 hidden md:block">
+                        {user.email}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="text-lg text-center pr-4   ">
+                    {user.position}
+                  </td>
+                  <td className="text-lg text-center pr-4   ">
+                    {user.country}{" "}
+                  </td>
+                  <td className="p-4 md:whitespace-nowrap md:text-base md:font-normal md:text-gray-900">
+                    <div className="flex  items-center">
+                      <div
+                        className={`h-2.5 w-2.5   rounded-full ${
+                          user.status === "active"
+                            ? "bg-green-400 "
+                            : "bg-red-500"
+                        } mr-2`}
+                      ></div>
+                      <span className=" "> {user.status}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 md:whitespace-nowrap space-x-2  ">
+                    <button
+                      onClick={() => openModal(user.id)}
+                      className="text-white bg-btnEdit font-medium rounded-lg text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
+                    >
+                      <FaEdit className="mr-1 md:mr-2 md:h-5 md:w-5" />
+                      Edit user
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="text-white bg-btnDelete font-medium rounded-lg mt-2 md:mt-0 text-xs md:text-md inline-flex items-center px-3 py-2 text-center"
+                    >
+                      <RiDeleteBin6Fill className="mr-1   md:mr-2 md:h-5 md:w-5" />
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      </div>
-      
 
       <ModalComponent
         isOpen={isModalOpen}
